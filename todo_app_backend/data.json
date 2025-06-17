@@ -1,0 +1,22 @@
+[
+  {
+    "id": 1678886400000,
+    "task": "Setup project repository",
+    "completed": true
+  },
+  {
+    "id": 1678886400001,
+    "task": "Define API endpoints",
+    "completed": true
+  },
+  {
+    "id": 1678886400002,
+    "task": "Implement user authentication",
+    "completed": false
+  },
+  {
+    "id": 1678886400003,
+    "task": "Write unit tests for API",
+    "completed": false
+  }
+]

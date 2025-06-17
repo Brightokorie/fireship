@@ -124,3 +124,23 @@ All endpoints are prefixed with `/`.
 *   The API uses standard HTTP status codes to indicate success or failure.
 *   Error responses are in JSON format: `{"error": "Error message"}`.
 *   A general `500 Internal Server Error` will be returned for unexpected server issues.
+
+## Exporting TODOs to GitHub Issues
+
+The project includes a script to export incomplete TODO items from `data.json` to GitHub issues.
+
+### Prerequisites
+
+*   **`jq`**: A lightweight and flexible command-line JSON processor. Install it from [https://stedolan.github.io/jq/download/](https://stedolan.github.io/jq/download/).
+*   **GitHub CLI (`gh`)**: The official command-line tool for GitHub. Install it from [https://cli.github.com/](https://cli.github.com/).
+*   **Authentication**: You need to be authenticated with `gh` to create issues. Run `gh auth login`.
+
+### Usage
+
+1.  Ensure `data.json` exists and contains the TODO items.
+2.  Navigate to the `todo_app_backend` directory.
+3.  Run the script:
+    ```bash
+    ./export_todos_to_github.sh
+    ```
+    The script will iterate through the tasks in `data.json` and create a GitHub issue for each task that is not marked as `completed: true`.
