@@ -1,1 +1,86 @@
+I’ll tailor the workflow to the repository’s existing app and scripts, and check the open GitHub workflow editor so the YAML matches what you’re about to paste.
 
+Get file or directory contents
+Completed with input: {
+  "owner": "Brightokorie",
+  "repo": "fireship",
+  "path": "todo_app_backend/package.json",
+  "ref": "refs/heads/feat/todo-backend"
+}
+
+Get file or directory contents
+Completed with input: {
+  "owner": "Brightokorie",
+  "repo": "fireship",
+  "path": "todo_app_backend/README.md",
+  "ref": "refs/heads/feat/todo-backend"
+}
+
+Get file or directory contents
+Completed with input: {
+  "owner": "Brightokorie",
+  "repo": "fireship",
+  "path": ".github/workflows",
+  "ref": "refs/heads/feat/todo-backend"
+}
+
+Read `Browser`
+
+Get file or directory contents
+Completed with input: {
+  "owner": "Brightokorie",
+  "repo": "fireship",
+  "path": "todo_app_backend/app.js",
+  "ref": "refs/heads/feat/todo-backend"
+}
+
+The repository currently contains a Node.js TODO **backend** in `todo_app_backend`, with tests and an npm lockfile. Paste this into the open `.github/workflows/main.yml` editor, replacing its contents. It will run the tests on pushes and pull requests to `main` or `feat/todo-backend`, and supports manual runs:
+
+```yaml
+name: TODO app CI
+
+on:
+  push:
+    branches:
+      - main
+      - feat/todo-backend
+  pull_request:
+    branches:
+      - main
+      - feat/todo-backend
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: Run backend tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          cache-dependency-path: todo_app_backend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: todo_app_backend
+        run: npm ci
+
+      - name: Run tests
+        working-directory: todo_app_backend
+        run: npm test -- --runInBand
+```
+
+This provides **continuous integration** (automated test runs), not deployment. A deployment step needs a hosting target, and the `feeze.html` app from your computer is not currently in this repository. After pasting, commit the workflow file on GitHub; you can see runs under the repository’s **Actions** tab.
