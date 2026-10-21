@@ -19,7 +19,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  test:
+  backend-tests:
     name: Run backend tests
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -35,10 +35,47 @@ jobs:
           cache: npm
           cache-dependency-path: todo_app_backend/package-lock.json
 
-      - name: Install dependencies
+      - name: Install backend dependencies
         working-directory: todo_app_backend
         run: npm ci
 
-      - name: Run tests
+      - name: Run backend tests
         working-directory: todo_app_backend
         run: npm test -- --runInBand
+
+  feeze-check:
+    name: Validate Feeze TODO app
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Validate Feeze HTML and JavaScript
+        run: |
+          node <<'NODE'
+          const assert = require('node:assert/strict');
+          const fs = require('node:fs');
+          const vm = require('node:vm');
+
+          const html = fs.readFileSync('feeze.html', 'utf8');
+          assert.match(html, /<title>\s*feeze todo\s*<\/title>/i);
+
+          for (const id of ['todo-form', 'task-input', 'task-list', 'task-counter', 'clear-all-btn']) {
+            assert.ok(html.includes(`id="${id}"`), `Missing required element: ${id}`);
+          }
+
+          const scripts = [...html.matchAll(/<script(?:\s[^>]*)?>([\s\S]*?)<\/script>/gi)];
+          assert.ok(scripts.length > 0, 'Feeze app must contain an inline script');
+          for (const [index, script] of scripts.entries()) {
+            new vm.Script(script[1], { filename: `feeze.html inline script ${index + 1}` });
+          }
+
+          console.log('Feeze HTML structure and inline JavaScript syntax are valid.');
+          NODE
