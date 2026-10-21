@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>feeze todo</title>
+  <!-- Google Fonts for Modern Typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    /* CSS Variables for Cool Ice Theme */
+    :root {
+      --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f2744 100%);
+      --card-bg: rgba(255, 255, 255, 0.95);
+      --card-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 20px rgba(56, 189, 248, 0.15);
+      --primary: #0284c7;
+      --primary-hover: #0369a1;
+      --primary-light: #e0f2fe;
+      --accent: #38bdf8;
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --success: #10b981;
+      --danger: #ef4444;
+      --danger-hover: #dc2626;
+      --radius: 16px;
+      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background: var(--bg-gradient);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 24px 16px;
+      color: var(--text-main);
+    }
+
+    /* Container Box */
+    .todo-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      width: 100%;
+      max-width: 460px;
+      border-radius: var(--radius);
+      box-shadow: var(--card-shadow);
+      padding: 32px 28px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    /* Header Styling */
+    .app-header {
+      text-align: center;
+      margin-bottom: 24px;
+    }
+
+    .brand-logo {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px;
+    }
+
+    .snowflake-icon {
+      font-size: 2rem;
+      filter: drop-shadow(0 0 8px rgba(56, 189, 248, 0.6));
+      animation: pulse 3s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      50% { transform: scale(1.08) rotate(10deg); }
+    }
+
+    .brand-logo h1 {
+      font-size: 1.85rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #0284c7, #0369a1);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      letter-spacing: -0.5px;
+    }
+
+    .tagline {
+      font-size: 0.88rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    /* Form Input */
+    .todo-form {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .input-wrapper {
+      position: relative;
+      flex: 1;
+    }
+
+    .todo-input {
+      width: 100%;
+      padding: 14px 16px;
+      background-color: #f8fafc;
+      border: 2px solid var(--border-color);
+      border-radius: 12px;
+      font-size: 0.95rem;
+      color: var(--text-main);
+      outline: none;
+      transition: var(--transition);
+    }
+
+    .todo-input::placeholder {
+      color: #94a3b8;
+    }
+
+    .todo-input:focus {
+      background-color: #ffffff;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.15);
+    }
+
+    .add-btn {
+      padding: 14px 22px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-hover));
+      color: #ffffff;
+      border: none;
+      border-radius: 12px;
+      font-weight: 600;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: var(--transition);
+      box-shadow: 0 4px 12px rgba(2, 132, 199, 0.25);
+      white-space: nowrap;
+    }
+
+    .add-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 16px rgba(2, 132, 199, 0.35);
+    }
+
+    .add-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Controls / Sub-header */
+    .controls-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .counter-badge {
+      font-size: 0.825rem;
+      font-weight: 600;
+      color: var(--primary);
+      background-color: var(--primary-light);
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .clear-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.825rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition);
+      padding: 4px 8px;
+      border-radius: 6px;
+    }
+
+    .clear-btn:hover {
+      color: var(--danger);
+      background-color: #fef2f2;
+    }
+
+    /* Task List */
+    .task-list {
+      list-style: none;
+      max-height: 360px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      padding-right: 4px;
+    }
+
+    /* Custom Scrollbar */
+    .task-list::-webkit-scrollbar {
+      width: 6px;
+    }
+    .task-list::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    .task-list::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 10px;
+    }
+
+    /* Task Item Style */
+    .task-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background-color: #f8fafc;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      transition: var(--transition);
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .task-item:hover {
+      border-color: #cbd5e1;
+      background-color: #ffffff;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    }
+
+    .task-item.completed {
+      background-color: #f1f5f9;
+      border-color: #e2e8f0;
+      opacity: 0.75;
+    }
+
+    .task-item.completed .task-text {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+    .task-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      cursor: pointer;
+      min-width: 0;
+    }
+
+    /* Custom Checkbox */
+    .custom-checkbox {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border: 2px solid #cbd5e1;
+      border-radius: 6px;
+      cursor: pointer;
+      display: grid;
+      place-content: center;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+
+    .custom-checkbox::before {
+      content: "✓";
+      font-size: 13px;
+      font-weight: bold;
+      color: white;
+      transform: scale(0);
+      transition: var(--transition);
+    }
+
+    .custom-checkbox:checked {
+      background-color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .custom-checkbox:checked::before {
+      transform: scale(1);
+    }
+
+    .task-text {
+      font-size: 0.95rem;
+      color: var(--text-main);
+      word-break: break-word;
+      line-height: 1.4;
+      transition: var(--transition);
+    }
+
+    /* Delete Button */
+    .delete-btn {
+      background: none;
+      border: none;
+      color: #94a3b8;
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: var(--transition);
+      margin-left: 8px;
+      flex-shrink: 0;
+    }
+
+    .delete-btn svg {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      stroke-width: 2;
+      fill: none;
+    }
+
+    .delete-btn:hover {
+      color: var(--danger);
+      background-color: #fef2f2;
+    }
+
+    /* Empty State */
+    .empty-state {
+      text-align: center;
+      padding: 36px 12px;
+      color: var(--text-muted);
+    }
+
+    .empty-icon {
+      font-size: 2.5rem;
+      margin-bottom: 8px;
+      opacity: 0.7;
+    }
+
+    .empty-text {
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 480px) {
+      .todo-card {
+        padding: 24px 20px;
+      }
+      .todo-form {
+        flex-direction: column;
+      }
+      .add-btn {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="todo-card">
+    <!-- Header -->
+    <header class="app-header">
+      <div class="brand-logo">
+        <span class="snowflake-icon">❄️</span>
+        <h1>feeze todo</h1>
+      </div>
+      <p class="tagline">Lock down your daily goals in place</p>
+    </header>
+
+    <!-- Task Input Form -->
+    <form id="todo-form" class="todo-form">
+      <div class="input-wrapper">
+        <input 
+          type="text" 
+          id="task-input" 
+          class="todo-input" 
+          placeholder="What needs to be frozen?" 
+          autocomplete="off"
+          required
+        />
+      </div>
+      <button type="submit" class="add-btn">Freeze Task</button>
+    </form>
+
+    <!-- Stats Bar -->
+    <div class="controls-bar">
+      <span id="task-counter" class="counter-badge">0 tasks left</span>
+      <button id="clear-all-btn" class="clear-btn">Clear All</button>
+    </div>
+
+    <!-- Task List Container -->
+    <ul id="task-list" class="task-list"></ul>
+  </main>
+
+  <script>
+    // DOM Elements
+    const todoForm = document.getElementById("todo-form");
+    const taskInput = document.getElementById("task-input");
+    const taskList = document.getElementById("task-list");
+    const taskCounter = document.getElementById("task-counter");
+    const clearAllBtn = document.getElementById("clear-all-btn");
+
+    // State: Retrieve tasks array from local storage or set default empty array
+    let tasks = JSON.parse(localStorage.getItem("feeze_todo_tasks")) || [];
+
+    // Save tasks array to local storage
+    function saveTasksToStorage() {
+      localStorage.setItem("feeze_todo_tasks", JSON.stringify(tasks));
+    }
+
+    // Render the task list
+    function renderTasks() {
+      taskList.innerHTML = "";
+
+      // Handle Empty State
+      if (tasks.length === 0) {
+        taskList.innerHTML = `
+          <li class="empty-state">
+            <div class="empty-icon">🧊</div>
+            <p class="empty-text">No tasks frozen yet. Add one above!</p>
+          </li>
+        `;
+        updateCounter();
+        return;
+      }
+
+      // Render individual task elements
+      tasks.forEach((task, index) => {
+        const li = document.createElement("li");
+        li.className = `task-item ${task.completed ? "completed" : ""}`;
+
+        // Left Container (Checkbox & Task Text)
+        const taskLeft = document.createElement("div");
+        taskLeft.className = "task-left";
+        taskLeft.onclick = () => toggleTaskCompletion(index);
+
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.className = "custom-checkbox";
+        checkbox.checked = task.completed;
+        checkbox.onclick = (e) => e.stopPropagation(); // prevent double triggering with taskLeft click
+        checkbox.onchange = () => toggleTaskCompletion(index);
+
+        const span = document.createElement("span");
+        span.className = "task-text";
+        span.textContent = task.text;
+
+        taskLeft.appendChild(checkbox);
+        taskLeft.appendChild(span);
+
+        // Delete Button with SVG icon
+        const deleteBtn = document.createElement("button");
+        deleteBtn.className = "delete-btn";
+        deleteBtn.title = "Delete Task";
+        deleteBtn.innerHTML = `
+          <svg viewBox="0 0 24 24">
+            <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+          </svg>
+        `;
+        deleteBtn.onclick = (e) => {
+          e.stopPropagation();
+          deleteTask(index);
+        };
+
+        li.appendChild(taskLeft);
+        li.appendChild(deleteBtn);
+        taskList.appendChild(li);
+      });
+
+      updateCounter();
+    }
+
+    // Add New Task Action
+    function addTask(e) {
+      e.preventDefault();
+      const text = taskInput.value.trim();
+
+      if (!text) return;
+
+      const newTask = {
+        text: text,
+        completed: false,
+        id: Date.now()
+      };
+
+      tasks.unshift(newTask); // Add new item to top of list
+      saveTasksToStorage();
+      renderTasks();
+      taskInput.value = "";
+    }
+
+    // Toggle Task Completion Action
+    function toggleTaskCompletion(index) {
+      tasks[index].completed = !tasks[index].completed;
+      saveTasksToStorage();
+      renderTasks();
+    }
+
+    // Delete Single Task Action
+    function deleteTask(index) {
+      tasks.splice(index, 1);
+      saveTasksToStorage();
+      renderTasks();
+    }
+
+    // Clear All Tasks Action
+    function clearAllTasks() {
+      if (tasks.length === 0) return;
+      tasks = [];
+      saveTasksToStorage();
+      renderTasks();
+    }
+
+    // Update Counter Action
+    function updateCounter() {
+      const activeCount = tasks.filter((task) => !task.completed).length;
+      taskCounter.textContent = `${activeCount} task${activeCount === 1 ? "" : "s"} left`;
+    }
+
+    // Attach Event Listeners
+    todoForm.addEventListener("submit", addTask);
+    clearAllBtn.addEventListener("click", clearAllTasks);
+
+    // Initial render on page load
+    renderTasks();
+  </script>
+
+</body>
+</html>
