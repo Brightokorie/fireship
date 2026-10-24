@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f7f4">
+    <title>Learning path — EGOtracker</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body class="learning-page">
+    <main class="learning-content">
+      <a class="back-link" href="/">← Back to EGOtracker</a>
+      <p class="eyebrow">YOUR BUILD-IT-BY-DOING-IT GUIDE</p>
+      <h1>Learn the tools behind <span>EGOtracker.</span></h1>
+      <p class="learning-lede">Follow the path from one local expense to a secure cloud app. Each step builds on the one before it.</p>
+
+      <section class="lesson-grid" aria-label="Learning roadmap">
+        <article class="lesson-card">
+          <span class="lesson-number">01</span>
+          <p class="eyebrow">NETWORKING</p>
+          <h2>Trace one request</h2>
+          <p>Open your browser's Network panel and add an expense. Follow the browser's <code>fetch</code> to <code>POST /api/expenses</code>, the Express route, Prisma Client, SQLite, and the JSON response.</p>
+          <p>Notice the host (<code>localhost</code>), port (<code>3000</code>), HTTP method, headers, status code, and JSON body. On the public internet, DNS finds a host and HTTPS/TLS encrypts the connection.</p>
+        </article>
+
+        <article class="lesson-card">
+          <span class="lesson-number">02</span>
+          <p class="eyebrow">PRISMA ORM</p>
+          <h2>Change the data model</h2>
+          <p>Open <code>prisma/schema.prisma</code>. Add a nullable field to <code>Expense</code>, then create a migration:</p>
+          <pre><code>npm run db:migrate -- --name add-field</code></pre>
+          <p>Read the generated SQL in <code>prisma/migrations/</code>. Find <code>findMany</code>, <code>create</code>, and <code>deleteMany</code> in the API and inspect saved records with Prisma Studio.</p>
+        </article>
+
+        <article class="lesson-card">
+          <span class="lesson-number">03</span>
+          <p class="eyebrow">GIT &amp; GITHUB</p>
+          <h2>Work in small changes</h2>
+          <p>Make a feature branch, inspect your diff, commit only the intended files, and push it to GitHub:</p>
+          <pre><code>git switch -c feat/my-change
+git status
+git add src/app.js
+git commit -m "Describe my change"
+git push -u origin feat/my-change</code></pre>
+          <p>Open a pull request, review the diff and checks, then merge. Keep <code>.env</code>, AWS keys, and database files out of Git.</p>
+        </article>
+
+        <article class="lesson-card">
+          <span class="lesson-number">04</span>
+          <p class="eyebrow">ACTIONS &amp; DEVSECOPS</p>
+          <h2>Make safety repeatable</h2>
+          <p>Inspect <code>.github/workflows/ci.yml</code>. Pushes and pull requests run Prisma schema validation, API tests, and an npm dependency audit.</p>
+          <p>Try a test that fails, push it on a branch, and follow the red check in the Actions tab. Fix it and confirm the green check. Then enable secret scanning and Dependabot, and require checks before merging.</p>
+        </article>
+
+        <article class="lesson-card lesson-card-wide">
+          <span class="lesson-number">05</span>
+          <p class="eyebrow">AWS DEPLOYMENT</p>
+          <h2>Move to the cloud deliberately</h2>
+          <p>First learn IAM roles, VPCs, subnets, security groups, DNS, and TLS. A production-shaped path is:</p>
+          <div class="architecture" aria-label="Browser to CloudFront and S3 to an API in App Runner or ECS to PostgreSQL in a private RDS network">
+            <span>Browser</span><b>→</b><span>CloudFront + S3</span><b>→</b><span>API (App Runner / ECS)</span><b>→</b><span>Private RDS PostgreSQL</span>
+          </div>
+          <p>SQLite is for local learning; it is not the shared, durable database for a multi-instance deployment. Migrate Prisma to PostgreSQL, keep the database private, store its URL in Secrets Manager, and give the API only the access it needs.</p>
+          <p>When ready, automate deployment with GitHub Actions using OIDC and a narrowly scoped IAM role—never a long-lived AWS key in GitHub secrets. Set billing alerts before creating paid resources.</p>
+        </article>
+      </section>
+
+      <p class="learning-footer">Ready to try it? Start the app with <code>npm run dev</code> and pick one small lesson.</p>
+    </main>
+  </body>
+</html>

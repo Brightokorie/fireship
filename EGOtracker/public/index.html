@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#f5f7f4">
+    <meta name="description" content="A calm, clear way to understand where your money goes.">
+    <title>EGOtracker — Your money, in perspective</title>
+    <link rel="stylesheet" href="/styles.css">
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <a class="brand" href="/" aria-label="EGOtracker home">
+          <span class="brand-mark" aria-hidden="true">E</span>
+          <span>EGO<span class="brand-light">tracker</span></span>
+        </a>
+
+        <p class="nav-label">WORKSPACE</p>
+        <nav aria-label="Main navigation">
+          <a class="nav-link nav-link-active" href="#overview" aria-current="page">
+            <span class="nav-icon" aria-hidden="true">◫</span> Overview
+          </a>
+          <a class="nav-link" href="#transactions">
+            <span class="nav-icon" aria-hidden="true">↗</span> Transactions
+          </a>
+          <a class="nav-link" href="#spending">
+            <span class="nav-icon" aria-hidden="true">◷</span> Spending
+          </a>
+        </nav>
+
+        <div class="sidebar-bottom">
+          <div class="learning-note">
+            <span class="learning-icon" aria-hidden="true">✳</span>
+            <p class="learning-title">Built to help you learn</p>
+            <p>Vanilla JavaScript, Express and Prisma. One small step at a time.</p>
+            <a href="/learn.html">Explore the learning guide <span aria-hidden="true">→</span></a>
+          </div>
+          <p class="sidebar-caption">A little more clarity, every day.</p>
+        </div>
+      </aside>
+
+      <main class="main-content" id="overview">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow">YOUR FINANCIAL SNAPSHOT</p>
+            <h1>Good money habits start with <span>awareness.</span></h1>
+          </div>
+          <label class="month-picker">
+            <span class="sr-only">Choose a month</span>
+            <span aria-hidden="true">▦</span>
+            <input id="month-filter" type="month">
+          </label>
+        </header>
+
+        <section class="summary-grid" aria-label="Monthly summary">
+          <article class="summary-card summary-primary">
+            <div class="summary-heading">
+              <span class="summary-label">TOTAL SPENT</span>
+              <span class="summary-icon" aria-hidden="true">↗</span>
+            </div>
+            <p class="summary-value" id="total-spent" aria-live="polite">$0.00</p>
+            <p class="summary-footnote" id="month-caption">Across all your expenses this month</p>
+          </article>
+          <article class="summary-card">
+            <div class="summary-heading">
+              <span class="summary-label">TRANSACTIONS</span>
+              <span class="summary-icon summary-icon-soft" aria-hidden="true">≋</span>
+            </div>
+            <p class="summary-value" id="transaction-count">0</p>
+            <p class="summary-footnote">A little detail adds up</p>
+          </article>
+          <article class="summary-card">
+            <div class="summary-heading">
+              <span class="summary-label">DAILY AVERAGE</span>
+              <span class="summary-icon summary-icon-soft" aria-hidden="true">◷</span>
+            </div>
+            <p class="summary-value" id="daily-average">$0.00</p>
+            <p class="summary-footnote">Based on the days elapsed</p>
+          </article>
+        </section>
+
+        <section class="content-grid">
+          <article class="panel transactions-panel" id="transactions">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">THE LITTLE THINGS</p>
+                <h2>Recent transactions</h2>
+              </div>
+              <label class="filter-control">
+                <span class="sr-only">Filter by category</span>
+                <select id="category-filter">
+                  <option value="">All categories</option>
+                  <option>Food &amp; dining</option>
+                  <option>Transport</option>
+                  <option>Shopping</option>
+                  <option>Bills &amp; utilities</option>
+                  <option>Health</option>
+                  <option>Entertainment</option>
+                  <option>Other</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th scope="col">DETAIL</th>
+                    <th scope="col">CATEGORY</th>
+                    <th scope="col">DATE</th>
+                    <th scope="col" class="amount-heading">AMOUNT</th>
+                    <th scope="col"><span class="sr-only">Actions</span></th>
+                  </tr>
+                </thead>
+                <tbody id="expense-list"></tbody>
+              </table>
+            </div>
+            <p class="status-message" id="status-message" role="status" aria-live="polite"></p>
+          </article>
+
+          <article class="panel spending-panel" id="spending">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">WHERE IT GOES</p>
+                <h2>By category</h2>
+              </div>
+              <span class="chart-decoration" aria-hidden="true">◒</span>
+            </div>
+            <div id="category-breakdown" class="category-breakdown"></div>
+            <p class="chart-empty" id="chart-empty">Your spending story will show up here.</p>
+          </article>
+        </section>
+
+        <section class="panel add-panel" aria-labelledby="add-heading">
+          <div class="add-intro">
+            <span class="add-mark" aria-hidden="true">＋</span>
+            <div>
+              <p class="eyebrow">MAKE IT COUNT</p>
+              <h2 id="add-heading">Add an expense</h2>
+              <p>Small entries. Big-picture clarity.</p>
+            </div>
+          </div>
+          <form id="expense-form" class="expense-form">
+            <label class="field field-title">
+              <span>What was it?</span>
+              <input name="title" maxlength="100" placeholder="e.g. Morning coffee" required>
+            </label>
+            <label class="field">
+              <span>Amount</span>
+              <span class="amount-input">
+                <span aria-hidden="true">$</span>
+                <input name="amount" type="number" min="0.01" max="99999999" step="0.01" placeholder="0.00" required>
+              </span>
+            </label>
+            <label class="field">
+              <span>Category</span>
+              <select name="category" required>
+                <option value="" disabled selected>Choose one</option>
+                <option>Food &amp; dining</option>
+                <option>Transport</option>
+                <option>Shopping</option>
+                <option>Bills &amp; utilities</option>
+                <option>Health</option>
+                <option>Entertainment</option>
+                <option>Other</option>
+              </select>
+            </label>
+            <label class="field">
+              <span>Date</span>
+              <input name="date" type="date" required>
+            </label>
+            <label class="field field-notes">
+              <span>Note <span class="optional-label">optional</span></span>
+              <input name="notes" maxlength="500" placeholder="Add a little context">
+            </label>
+            <button class="submit-button" type="submit">Add expense <span aria-hidden="true">↗</span></button>
+          </form>
+        </section>
+
+        <footer class="page-footer">
+          <span>Made for mindful money moments.</span>
+          <a href="/learn.html">Keep learning <span aria-hidden="true">→</span></a>
+        </footer>
+      </main>
+    </div>
+  </body>
+</html>
